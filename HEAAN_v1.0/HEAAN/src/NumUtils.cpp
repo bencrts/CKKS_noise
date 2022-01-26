@@ -8,6 +8,7 @@
 #include "NumUtils.h"
 
 void NumUtils::sampleGauss(ZZX& res, const long size, const double stdev) {
+	//NTL::SetSeed((NTL::conv<NTL::ZZ>((long)1222)));
 	static double const Pi = 4.0 * atan(1.0);
 	static long const bignum = 0xfffffff;
 	res.SetLength(size);
@@ -17,7 +18,8 @@ void NumUtils::sampleGauss(ZZX& res, const long size, const double stdev) {
 		double r2 = (1 + RandomBnd(bignum)) / ((double)bignum + 1);
 		double theta = 2 * Pi * r1;
 		double rr= sqrt(-2.0 * log(r2)) * stdev;
-		assert(rr < 8 * stdev); // sanity-check, no more than 8 standard deviations
+		//assert(rr < 8 * stdev); // sanity-check, no more than 8 standard deviations
+		//took out sanity check because setting stdev = 0 during encryption
 		// Generate two Gaussians RV's, rounded to integers
 		long x1 = (long) floor(rr * cos(theta) + 0.5);
 		res.rep[i] = x1;
@@ -70,8 +72,21 @@ void NumUtils::sampleBinary(ZZX& res, const long size) {
 }
 
 void NumUtils::sampleUniform2(ZZX& res, const long size, const long bits) {
+	//NTL::SetSeed((NTL::conv<NTL::ZZ>((long)1222)));
 	res.SetLength(size);
 	for (long i = 0; i < size; i++) {
 		res.rep[i] = RandomBits_ZZ(bits);
+	}
+}
+
+void NumUtils::sampleTernary(ZZX& res, const long size) {
+	//NTL::SetSeed((NTL::conv<NTL::ZZ>((long)1222)));
+	res.SetLength(size);
+	
+	for(int i = 0; i < size; i++){
+		// sample a random value x \in {0,1,2}
+		long res_i = RandomBnd(3);
+		// put x - 1 \in {-1,0,1} into the slot s[i]
+		res[i] = ZZ(res_i - 1);
 	}
 }

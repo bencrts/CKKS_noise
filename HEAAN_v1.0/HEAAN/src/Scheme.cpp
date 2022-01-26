@@ -32,12 +32,25 @@ Scheme::Scheme(SecretKey& secretKey, Context& context) : context(context) {
 //----------------------------------------------------------------------------------
 
 
+void Scheme::printpoly(ZZX mx, string name, int count){
+	//a function for printing polynomials within scheme
+	cout << "printing "<< name << "...\n";
+	cout << mx[0]<<"+";
+	for(int i = 1; i< count; i++){
+		cout << mx[i]<<"X^"<<i<<"+";
+	}
+	cout << "...\n";
+
+}
+
 void Scheme::addEncKey(SecretKey& secretKey) {
 	ZZX ex, ax, bx;
 
 	NumUtils::sampleUniform2(ax, context.N, context.logQQ);
-	NumUtils::sampleGauss(ex, context.N, context.sigma);
-	Ring2Utils::mult(bx, secretKey.sx, ax, context.QQ, context.N);
+	//printpoly(ax,"ax (uniform, public key)",10);
+    NumUtils::sampleGauss(ex, context.N, context.sigma);
+	//printpoly(ex,"ex (Gaussian)",10);
+    Ring2Utils::mult(bx, secretKey.sx, ax, context.QQ, context.N);
 	Ring2Utils::sub(bx, ex, bx, context.QQ, context.N);
 
 	keyMap.insert(pair<long, Key>(ENCRYPTION, Key(ax, bx)));
@@ -118,12 +131,12 @@ void Scheme::addSortKeys(SecretKey& secretKey, long size) {
 
 
 Plaintext Scheme::encode(double* vals, long slots, long logp, long logq) {
-	ZZX mx = context.encode(vals, slots, logp + context.logQ);
+	ZZX mx = context.encode(vals, slots, logp);//taken out a  + context.logQ because no longer encoding into QQ
 	return Plaintext(mx, logp, logq, slots, false);
 }
 
 Plaintext Scheme::encode(complex<double>* vals, long slots, long logp, long logq) {
-	ZZX mx = context.encode(vals, slots, logp + context.logQ);
+	ZZX mx = context.encode(vals, slots, logp); //taken out a  + context.logQ because no longer encoding into QQ
 	return Plaintext(mx, logp, logq, slots, true);
 }
 
@@ -132,12 +145,12 @@ complex<double>* Scheme::decode(Plaintext& msg) {
 }
 
 Plaintext Scheme::encodeSingle(complex<double> val, long logp, long logq) {
-	ZZX mx = context.encodeSingle(val, logp + context.logQ);
+	ZZX mx = context.encodeSingle(val, logp);//taken out a  + context.logQ because no longer encoding into QQ
 	return Plaintext(mx, logp, logq, 1, true);
 }
 
 Plaintext Scheme::encodeSingle(double val, long logp, long logq) {
-	ZZX mx = context.encodeSingle(val, logp + context.logQ);
+	ZZX mx = context.encodeSingle(val, logp);////taken out a  + context.logQ because no longer encoding into QQ
 	return Plaintext(mx, logp, logq, 1, false);
 }
 
@@ -154,21 +167,26 @@ complex<double> Scheme::decodeSingle(Plaintext& msg) {
 Ciphertext Scheme::encryptMsg(Plaintext& msg) {
 	ZZX ax, bx, vx, ex;
 	Key key = keyMap.at(ENCRYPTION);
-	ZZ qQ = context.qpowvec[msg.logq + context.logQ];
-
-	NumUtils::sampleZO(vx, context.N);
-	Ring2Utils::mult(ax, vx, key.ax, qQ, context.N);
+	ZZ q = context.qpowvec[msg.logq];
+	//ZZ qQ = context.qpowvec[msg.logq + context.logQ];
+	//NumUtils::sampleHWT(vx, context.N, ceil(2*context.N/3));	
+	//printpoly(vx,"vx (ephemeral secret)",10);
+	NumUtils::sampleTernary(vx, context.N);
+	//NumUtils::sampleZO(vx, context.N);
+	Ring2Utils::mult(ax, vx, key.ax, q, context.N);
 	NumUtils::sampleGauss(ex, context.N, context.sigma);
-	Ring2Utils::addAndEqual(ax, ex, qQ, context.N);
+	//printpoly(ex,"ex (first Gaussian error)",10);
+	Ring2Utils::addAndEqual(ax, ex, q, context.N);
 
-	Ring2Utils::mult(bx, vx, key.bx, qQ, context.N);
+	Ring2Utils::mult(bx, vx, key.bx, q, context.N);
 	NumUtils::sampleGauss(ex, context.N, context.sigma);
-	Ring2Utils::addAndEqual(bx, ex, qQ, context.N);
+	//printpoly(ex,"ex (second Gaussian error)",10);
+	Ring2Utils::addAndEqual(bx, ex, q, context.N);
 
-	Ring2Utils::addAndEqual(bx, msg.mx, qQ, context.N);
+	Ring2Utils::addAndEqual(bx, msg.mx, q, context.N);
 
-	Ring2Utils::rightShiftAndEqual(ax, context.logQ, context.N);
-	Ring2Utils::rightShiftAndEqual(bx, context.logQ, context.N);
+	//Ring2Utils::rightShiftAndEqual(ax, context.logQ, context.N);
+	//Ring2Utils::rightShiftAndEqual(bx, context.logQ, context.N);
 
 	return Ciphertext(ax, bx, msg.logp, msg.logq, msg.slots, msg.isComplex);
 }
@@ -204,6 +222,11 @@ complex<double>* Scheme::decrypt(SecretKey& secretKey, Ciphertext& cipher) {
 	return decode(msg);
 }
 
+Plaintext Scheme::decrypt_no_decode(SecretKey& secretKey, Ciphertext& cipher){
+	Plaintext msg = decryptMsg(secretKey, cipher);
+	return msg;
+}
+
 Ciphertext Scheme::encryptSingle(double val, long logp, long logq) {
 	Plaintext msg = encodeSingle(val, logp,  logq);
 	return encryptMsg(msg);
@@ -219,7 +242,43 @@ complex<double> Scheme::decryptSingle(SecretKey& secretKey, Ciphertext& cipher) 
 	return decodeSingle(msg);
 }
 
+Plaintext Scheme::decrypt_no_decodeSingle(SecretKey& secretKey, Ciphertext& cipher){
+	Plaintext msg = decryptMsg(secretKey, cipher);
+	return msg;
+}
 
+ZZX Scheme::balance_polynomial(ZZX poly, long logq){
+
+	ZZ q = context.qpowvec[logq];
+	int n = deg(poly);
+
+	for(int i = 0; i < n + 1; i++){
+
+		if (poly[i] >q/2){
+			poly[i] -= q;
+		}
+	}
+	return poly;
+}
+
+ZZ Scheme::ZZX_oo_difference(ZZX poly1, ZZX poly2, long logq){
+
+	ZZX diff;
+	diff = poly1 - poly2;
+	//diff = balance_polynomial(diff, logq);
+	int d = deg(diff);
+	
+	ZZ a;
+	a = 0;
+	for(int i = 0; i < d + 1; i++){
+		ZZ b = abs(diff[i]);
+		if(b > a){
+			a = b;
+		}
+	}
+
+	return a;
+}
 //----------------------------------------------------------------------------------
 //   HOMOMORPHIC OPERATIONS
 //----------------------------------------------------------------------------------

@@ -100,6 +100,16 @@ public:
 	complex<double>* decode(ZZX& mx, long slots, long logp, long logq);
 
 	/**
+	 * decoding values from a polynomial
+	 * @param[in] mx: polynomial
+	 * @param[in] slots: size of array
+	 * @param[in] logp: number of quantized bits
+	 * @param[in] logq: number of modulus bits
+	 */
+	complex<double>* decode_lemma3(ZZX& mx, long slots, long logp, long logq);
+
+
+	/**
 	 * decoding value from a polynomial
 	 * @param[in] mx: polynomial
 	 * @param[in] logp: number of quantized bits

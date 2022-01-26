@@ -17,6 +17,8 @@
 
 
 double EvaluatorUtils::randomReal(double bound)  {
+	// initialize random seed
+  	//srand (1222);
 	return (double) rand()/(RAND_MAX) * bound;
 }
 
@@ -35,7 +37,8 @@ complex<double> EvaluatorUtils::randomCircle(double anglebound) {
 	return res;
 }
 
-double* EvaluatorUtils::randomRealArray(long size, double bound) {
+double* EvaluatorUtils::randomRealArray(long size, double bound, unsigned seed) {
+	srand(seed);
 	double* res = new double[size];
 	for (long i = 0; i < size; ++i) {
 		res[i] = randomReal(bound);

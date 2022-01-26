@@ -8,6 +8,7 @@
 #include "SecretKey.h"
 
 SecretKey::SecretKey(long logN, long h) {
+	// h becomes a redundant input, we leave it anyway
 	long N = 1 << logN;
-	NumUtils::sampleHWT(sx, N, h);
+	NumUtils::sampleTernary(sx, N);
 }

@@ -42,7 +42,7 @@ public:
 	/**
 	 * generate array of random real values in range (0, bound)
 	 */
-	static double* randomRealArray(long size, double bound = 1.0);
+	static double* randomRealArray(long size, double bound = 1.0, unsigned seed = 0);
 
 	/**
 	 * generate array of random complex values with both real and imaginary part in range (0, bound).

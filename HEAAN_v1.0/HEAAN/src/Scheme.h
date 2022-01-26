@@ -36,6 +36,9 @@ public:
 
 	Scheme(SecretKey& secretKey, Context& context);
 
+	//printing
+	void printpoly(ZZX mx,string name,int count);	
+	
 	//----------------------------------------------------------------------------------
 	//   KEYS GENERATION
 	//----------------------------------------------------------------------------------
@@ -217,6 +220,38 @@ public:
 	 */
 	complex<double> decryptSingle(SecretKey& secretKey, Ciphertext& cipher);
 
+	/**
+	 * decrypts ciphertext without decoding
+	 * @param[in] secretKey: secret key
+	 * @param[in] cipher: ciphertext
+	 * @return plaintext
+	 */
+	Plaintext decrypt_no_decode(SecretKey& secretKey, Ciphertext& cipher);
+
+	/**
+	 * decrypts ciphertext without decoding
+	 * @param[in] secretKey: secret key
+	 * @param[in] cipher: ciphertext
+	 * @return plaintext
+	 */
+	Plaintext decrypt_no_decodeSingle(SecretKey& secretKey, Ciphertext& cipher);
+
+	/**
+	 * balances a polynomial in Z_q[X] so the coefficients are in (-q/2, q/2)
+	 * @param[in] poly: the polynomial to be balanced
+	 * @param[in] logq: log of the ciphertext modulus
+	 * @return plaintext
+	 */
+	ZZX balance_polynomial(ZZX poly, long logq);
+
+	/**
+	 * computes the difference (oo-norm) of two polynomials in ZZX
+	 * @param[in] poly1: the first input polynomial
+	 * @param[in] poly2: the second input polynomial
+	 * @param[in] logq: log of the ciphertext modulus
+	 * @return integer containing ||poly1 - poly2||_oo
+	 */
+	ZZ ZZX_oo_difference(ZZX poly1, ZZX poly2, long logq);
 
 	//----------------------------------------------------------------------------------
 	//   HOMOMORPHIC OPERATIONS

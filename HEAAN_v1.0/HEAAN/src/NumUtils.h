@@ -70,6 +70,13 @@ public:
 	 */
 	static void sampleUniform2(ZZX& res, const long size, const long bits);
 
+	/**
+	 * samples polynomial with random {-1,0,1} coefficients
+	 * @param[out] res: ZZX polynomial
+	 * @param[in] size: polynomial degree
+	 */
+	static void sampleTernary(ZZX& res, const long size);
+
 };
 
 #endif

@@ -73,9 +73,13 @@ ZZX Context::encode(complex<double>* vals, long slots, long logp) {
 
 	ZZX mx;
 	mx.SetLength(N);
+
 	long gap = Nh / slots;
+
 	fftSpecialInv(uvals, slots);
 	for (i = 0, jdx = Nh, idx = 0; i < slots; ++i, jdx += gap, idx += gap) {
+
+		// apply the scale value \Delta and apply f (coefficients to polynomial)
 		mx.rep[idx] = EvaluatorUtils::scaleUpToZZ(uvals[i].real(), logp);
 		mx.rep[jdx] = EvaluatorUtils::scaleUpToZZ(uvals[i].imag(), logp);
 	}
@@ -121,23 +125,74 @@ ZZX Context::encodeSingle(double val, long logp) {
 }
 
 complex<double>* Context::decode(ZZX& mx, long slots, long logp, long logq) {
+	// decode a polynomial m(x) \in ZZ[X]/(X^N + 1) into z \in CC^{N/2}
 	ZZ q = qpowvec[logq];
+	// logNh = logN - 1;
+
 	long gap = Nh / slots;
+
+	// a complex double to store the decoded result
 	complex<double>* res = new complex<double>[slots];
+	// a temporary NTL integer used to store intermediate results
 	ZZ tmp;
 
 	for (long i = 0, idx = 0; i < slots; ++i, idx += gap) {
+
+		// real part of res[i]
+		// rem takes the remainder of mx[idx] modulo q, and stores it in tmp, i.e.:
+		// void rem(ZZ& r, const ZZ& a, const ZZ& b);
+		// q = floor(a/b), r = a - b*q
 		rem(tmp, mx[idx], q);
+
+		// if tmp > q, we subtract q (?) not sure why this is needed after the prev step, 
+		// probably to handle an edge cases
 		if(NumBits(tmp) == logq) tmp -= q;
+
+		// scaleDownToReal applies multiplication Delta^{-1}, using a bitshift operator (<<)
+		// put the result into the real part of res[i]
 		res[i].real(EvaluatorUtils::scaleDownToReal(tmp, logp));
 
+		// imaginary part of res[i]
 		rem(tmp, mx[idx + Nh], q);
 		if(NumBits(tmp) == logq) tmp -= q;
+		// scaleDownToReal applies multiplication Delta^{-1}, using a bitshift operator (<<)
+		// put the result into the imaginary part of res[i]
 		res[i].imag(EvaluatorUtils::scaleDownToReal(tmp, logp));
 	}
+
+	// apply the "Special FFT" used in the encoding/decoding process. 
 	fftSpecial(res, slots);
 	return res;
 }
+
+complex<double>* Context::decode_lemma3(ZZX& mx, long slots, long logp, long logq) {
+	// decode a polynomial m(x) \in ZZ[X]/(X^N + 1) into z \in CC^{N/2}
+	ZZ q = qpowvec[logq];
+	// logNh = logN - 1;
+
+	long gap = Nh / slots;
+
+	// a complex double to store the decoded result
+	complex<double>* res = new complex<double>[slots];
+	// a temporary NTL integer used to store intermediate results
+	ZZ tmp;
+
+	for (long i = 0, idx = 0; i < slots; ++i, idx += gap) {
+
+		double tmp;
+		tmp = conv<double>(mx[idx]);
+		res[i].real(tmp);
+
+		// imaginary part of res[i]
+		tmp = conv<double>(mx[idx + Nh]);
+		res[i].imag(tmp);
+	}
+
+	// apply the "Special FFT" used in the encoding/decoding process. 
+	fftSpecial(res, slots);
+	return res;
+}
+
 
 complex<double> Context::decodeSingle(ZZX& mx, long logp, long logq, bool isComplex) {
 	ZZ q = qpowvec[logq];
