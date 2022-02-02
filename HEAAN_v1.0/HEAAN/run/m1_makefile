@@ -19,7 +19,7 @@ HEAAN-nr:
 	@echo 'Invoking: GCC C++ Linker'
 	g++ NR/main.cpp -o HEAAN -L/opt/homebrew/lib ../lib/libHEAAN.a -lntl -lgmp -lm -std=c++11 -O2 -I/../src -pthread
 	@echo 'Finished building target: $@'
-	@echo ' '
+	@echo ' 's
 
 HEAAN-complex:
 	@echo 'Building target: $@'
@@ -27,6 +27,7 @@ HEAAN-complex:
 	g++ complex/main.cpp -o "HEAAN" -L/opt/homebrew/lib ../lib/libHEAAN.a  -lntl -lgmp -lm -std=c++11 -O2 -I/../src -pthread
 	@echo 'Finished building target: $@'
 	@echo ' '
+
 
 # Other Targets
 clean:
