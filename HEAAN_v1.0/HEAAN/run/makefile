@@ -10,7 +10,7 @@ nr: clean HEAAN-nr run
 HEAAN-encryption:
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L/opt/homebrew/lib -o "HEAAN" ../lib/libHEAAN.a encryption/main.cpp -I/../src -lgmp -lntl -lm -O2 -std=c++11
+	g++   encryption/main.cpp  -o HEAAN -L/opt/homebrew/lib ../lib/libHEAAN.a -I/../src -lntl -lgmp -lm -O2 -std=c++11 -pthread
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -24,7 +24,7 @@ HEAAN-nr:
 HEAAN-complex:
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ complex/main.cpp -o "HEAAN" -L/opt/homebrew/lib ../lib/libHEAAN.a  -lntl -lgmp -lm -std=c++11 -O2 -I/../src -pthread
+	g++ complex/main.cpp -o HEAAN -L/opt/homebrew/lib ../lib/libHEAAN.a  -lntl -lgmp -lm -std=c++11 -O2 -I/../src -pthread
 	@echo 'Finished building target: $@'
 	@echo ' '
 

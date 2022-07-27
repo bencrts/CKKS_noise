@@ -1,0 +1,7 @@
+*.a
+*.so
+*.o
+*.d
+*.log
+*.pyc
+.vscode/

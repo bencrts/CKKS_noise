@@ -6,7 +6,7 @@ from config import *
 
 def run_all(skip = {}):
 
-    for i in range(1, len(list_of_n)):
+    for i in range(len(list_of_n)):
 
         if "CE" not in skip:
             print("------- CE Results -------")
@@ -37,6 +37,6 @@ def run_all(skip = {}):
             # for complex to complex, the complex entries have input bound sqrt(2)
             print(test_clt_bounds_decoding_alpha(list_of_n[i], alpha, delta, input_bound * sqrt(2), sigma, list_of_q[i], tag = "CC->CC CLT"))
 
-        return 0
+    return 0
 
 run_all()
