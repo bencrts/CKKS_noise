@@ -37,7 +37,6 @@ int main()
         // this will determine if we run: random reals, random PTs or fixed poly
         SecretKey sk(log_N[i]);
         noise_final_average(log_N[i], log_Q[i], log_P[i], plaintext_bound, loop, sk, instance);
-
     }
     return 0;
 }

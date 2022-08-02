@@ -1,5 +1,5 @@
 /////////////////////////////////////
-///the different circuits we test ///
+/// the different circuits we test ///
 /////////////////////////////////////
 
 #include "../../src/HEAAN.h"
@@ -13,14 +13,14 @@ using namespace NTL;
 vector<double> test_encdec(long logN, long logQ, long logp)
 {
     /*
-	A function which determines the error due to encryption/
-	decryption. 
+    A function which determines the error due to encryption/
+    decryption.
 
-	@param logN logarithm of the ring dimension N
-	@param logQ logarithm of the (maximal) ciphertext modulus q 
-	@param logp logarithm of the base used for scaling
-	@return a vector of statistics about the error sizes
-	*/
+    @param logN logarithm of the ring dimension N
+    @param logQ logarithm of the (maximal) ciphertext modulus q
+    @param logp logarithm of the base used for scaling
+    @return a vector of statistics about the error sizes
+    */
 
     // Create the context and set up the encryption scheme
     Context context(logN, logQ);
@@ -91,7 +91,7 @@ vector<double> test_encdec(long logN, long logQ, long logp)
     results.push_back(size_mult / slots);
     results.push_back(size_multmult / slots);
     results.push_back(size_multmultmult / slots);
-    
+
     // delete
     delete[] m1;
     delete[] m2;
@@ -106,7 +106,7 @@ double basic_circuit_add(long logN, long logQ, long logp)
     SecretKey sk(logN);
     Scheme scheme(sk, context);
 
-    //Initialise random seed
+    // Initialise random seed
     srand(time(NULL));
     unsigned seed_1 = rand() % 10 + 1;
     unsigned seed_2 = rand() % 10 + 1;
@@ -122,7 +122,7 @@ double basic_circuit_add(long logN, long logQ, long logp)
     double *m1 = EvaluatorUtils::randomRealArray(slots, bound, seed_1);
     double *m2 = EvaluatorUtils::randomRealArray(slots, bound, seed_2);
 
-    //Now encode
+    // Now encode
     Plaintext r1 = context.encode(m1, slots, logp);
     Plaintext r2 = context.encode(m2, slots, logp);
 
@@ -134,26 +134,26 @@ double basic_circuit_add(long logN, long logQ, long logp)
     ZZX s1 = r1.mx;
     ZZX s2 = r2.mx;
 
-    //Evaluate the circuit described above
+    // Evaluate the circuit described above
     ZZX sum = s1 + s2;
 
     // Now do the same on the cts
     Ciphertext c_sum = scheme.add(c1, c2);
 
-    //Now decrypt but don't decode
+    // Now decrypt but don't decode
     Plaintext m_sum = scheme.decrypt_no_decode(sk, c_sum);
 
-    //Extract the polynomial
+    // Extract the polynomial
     ZZX decrypted = m_sum.mx;
 
-    //Compute the norm of their difference
+    // Compute the norm of their difference
     ZZ test = scheme.ZZX_oo_difference(decrypted, sum, logQ);
 
     double log_test = NTL::log(test);
 
-    //Return (the log of) said difference
+    // Return (the log of) said difference
     ZZ two;
-    two = 2;    
+    two = 2;
     // delete
     delete[] m1;
     delete[] m2;
@@ -168,7 +168,7 @@ double basic_circuit_mult(long logN, long logQ, long logp)
     SecretKey sk(logN);
     Scheme scheme(sk, context);
 
-    //Initialise random seed
+    // Initialise random seed
     srand(time(NULL));
     unsigned seed_1 = rand() % 10 + 1;
     unsigned seed_2 = rand() % 10 + 1;
@@ -184,7 +184,7 @@ double basic_circuit_mult(long logN, long logQ, long logp)
     double *m1 = EvaluatorUtils::randomRealArray(slots, bound, seed_1);
     double *m2 = EvaluatorUtils::randomRealArray(slots, bound, seed_2);
 
-    //Now encode
+    // Now encode
     Plaintext r1 = context.encode(m1, slots, logp);
     Plaintext r2 = context.encode(m2, slots, logp);
 
@@ -196,26 +196,26 @@ double basic_circuit_mult(long logN, long logQ, long logp)
     ZZX s1 = r1.mx;
     ZZX s2 = r2.mx;
 
-    //Evaluate the circuit described above
+    // Evaluate the circuit described above
     ZZX prod = s1 * s2;
 
     // Now do the same on the cts
     Ciphertext c_mult = scheme.mult(c1, c2);
 
-    //Now decrypt but don't decode
+    // Now decrypt but don't decode
     Plaintext m_mult = scheme.decrypt_no_decode(sk, c_mult);
 
-    //Extract the polynomial
+    // Extract the polynomial
     ZZX decrypted = m_mult.mx;
 
-    //Compute the norm of their difference
+    // Compute the norm of their difference
     ZZ test = scheme.ZZX_oo_difference(decrypted, prod, logQ);
 
     double log_test = NTL::log(test);
 
-    //Return (the log of) the difference
+    // Return (the log of) the difference
     ZZ two;
-    two = 2;    
+    two = 2;
 
     // delete
     delete[] m1;
@@ -227,25 +227,25 @@ double basic_circuit_mult(long logN, long logQ, long logp)
 double encoded_circuit(long logN, long logQ, long logp)
 {
     /*A function that generates three random numbers
-	m1, m2, m3. It then encodes those values into ri.
-	On the one side, it computes prod = (r1 + r2)*r3.
-	On the other, it encrypts the values into ci. Then
-	computes decrypted = decrypt_no_decode((c1 + c2)*c3).
-	We then compute the difference prod - dcrypted.
-	This is to measure the size of the LWE error. 
+    m1, m2, m3. It then encodes those values into ri.
+    On the one side, it computes prod = (r1 + r2)*r3.
+    On the other, it encrypts the values into ci. Then
+    computes decrypted = decrypt_no_decode((c1 + c2)*c3).
+    We then compute the difference prod - dcrypted.
+    This is to measure the size of the LWE error.
 
-	@param logN logarithm of the ring dimension N
-	@param logQ logarithm of the (maximal) ciphertext modulus q 
-	@param logp logarithm of the base used for scaling
-	@return a vector of statistics about the error sizes
-	*/
+    @param logN logarithm of the ring dimension N
+    @param logQ logarithm of the (maximal) ciphertext modulus q
+    @param logp logarithm of the base used for scaling
+    @return a vector of statistics about the error sizes
+    */
 
     // Create the context and set up the encryption scheme
     Context context(logN, logQ);
     SecretKey sk(logN);
     Scheme scheme(sk, context);
 
-    //Initialise random seed
+    // Initialise random seed
     srand(time(NULL));
     unsigned seed_1 = rand() % 10 + 1;
     unsigned seed_2 = rand() % 10 + 1;
@@ -262,14 +262,14 @@ double encoded_circuit(long logN, long logQ, long logp)
     double *m2 = EvaluatorUtils::randomRealArray(slots, bound, seed_2);
     double *m3 = EvaluatorUtils::randomRealArray(slots, bound, seed_3);
 
-    //Now encode
+    // Now encode
     Plaintext r1 = context.encode(m1, slots, logp);
     Plaintext r2 = context.encode(m2, slots, logp);
     Plaintext r3 = context.encode(m3, slots, logp);
 
     ZZ x = polynomial_max_coeff(r1.mx);
 
-    //cout << x << endl;
+    // cout << x << endl;
 
     // Encrypt the random arrays
     Ciphertext c1 = scheme.encrypt(m1, slots, logp, logQ);
@@ -281,7 +281,7 @@ double encoded_circuit(long logN, long logQ, long logp)
     ZZX s2 = r2.mx;
     ZZX s3 = r3.mx;
 
-    //Evaluate the circuit described above
+    // Evaluate the circuit described above
     ZZX sum = s1 + s2;
     ZZX prod = sum * s3;
     ZZX plain_rs;
@@ -291,23 +291,23 @@ double encoded_circuit(long logN, long logQ, long logp)
     Ciphertext c_add = scheme.add(c1, c2);
     Ciphertext c_mult = scheme.mult(c_add, c3);
 
-    //Rescale
+    // Rescale
     scheme.reScaleByAndEqual(c_mult, logp);
 
-    //Now decrypt but don't decode
+    // Now decrypt but don't decode
     Plaintext m_decrypted = scheme.decrypt_no_decode(sk, c_mult);
 
-    //Extract the polynomial
-    ZZX decrypted = m_decrypted.mx/;
+    // Extract the polynomial
+    ZZX decrypted = m_decrypted.mx / ;
 
-    //Compute the norm of their difference
+    // Compute the norm of their difference
     ZZ test = scheme.ZZX_oo_difference(decrypted, prod, logQ);
 
     double log_test = NTL::log(test);
 
-    //Return the difference
+    // Return the difference
     ZZ two;
-    two = 2;    
+    two = 2;
     // delete
     delete[] m1;
     delete[] m2;
@@ -315,5 +315,3 @@ double encoded_circuit(long logN, long logQ, long logp)
 
     return log_test / NTL::log(two);
 }
-
-

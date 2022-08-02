@@ -1,5 +1,5 @@
 /////////////////////////////////////
-///NTL specific utility functions ///
+/// NTL specific utility functions ///
 /////////////////////////////////////
 
 #include <NTL/ZZXFactoring.h>
@@ -15,9 +15,9 @@ using namespace NTL;
 void print_results(vector<double> results)
 {
     /*
-	A function which prints the elements of a results vector
-	@param results a vector of results
-	*/
+    A function which prints the elements of a results vector
+    @param results a vector of results
+    */
     cout << "printing result..." << endl;
     for (int i = 0; i < results.size(); i++)
     {
@@ -28,10 +28,10 @@ void print_results(vector<double> results)
 void print_complex_array(complex<double> *array, int count)
 {
     /*
-	A function which prints the elements of a results vector
-	@param results a vector of results
-	*/
-    //cout << "printing result..." << endl;
+    A function which prints the elements of a results vector
+    @param results a vector of results
+    */
+    // cout << "printing result..." << endl;
     for (int i = 0; i < count - 1; i++)
     {
         cout << array[i].real() << "+" << array[i].imag() << "i,";
@@ -43,19 +43,19 @@ Plaintext generate_random_plaintext(long logN, ZZ B, long logP, long logQ)
 {
 
     /* Generates a random plaintext for ring dimension 2**logN, with
-	coefficients between -B and B
+    coefficients between -B and B
 
-	@param logN the log of the ring dimension
-	@param B the bound on the plaintext coefficients
+    @param logN the log of the ring dimension
+    @param B the bound on the plaintext coefficients
 
-	EXAMPLE:
+    EXAMPLE:
 
-	ZZX g = generate_random_plaintext(2, 100);
-	cout << "The polynomial is " << g << endl;
+    ZZX g = generate_random_plaintext(2, 100);
+    cout << "The polynomial is " << g << endl;
 
-	OUTPUT:
-	The polynomial is [24 0 88 -59]
-	*/
+    OUTPUT:
+    The polynomial is [24 0 88 -59]
+    */
     srand(time(0));
 
     ZZX f_out;
@@ -82,7 +82,7 @@ Plaintext generate_random_plaintext(long logN, ZZ B, long logP, long logQ)
 
 complex<double> *generate_random_plaintext_v2(long logN, ZZ B, long logp, long logQ)
 {
-    //so first make the random poly
+    // so first make the random poly
     srand(time(0));
 
     ZZX f_out;
@@ -123,25 +123,25 @@ complex<double> *generate_random_plaintext_v2(long logN, ZZ B, long logp, long l
 ZZ polynomial_max_coeff(ZZX f)
 {
     /*
-	Get the maximal coefficient of an input polynomial f, i.e. if 
-	f = a_0 + a_1x + ... + a_{n-1}x^{n-1} we return the value
-	a = max_i {a_i}
+    Get the maximal coefficient of an input polynomial f, i.e. if
+    f = a_0 + a_1x + ... + a_{n-1}x^{n-1} we return the value
+    a = max_i {a_i}
 
-	@param f an NTL polynomial
+    @param f an NTL polynomial
 
-	EXAMPLE:
+    EXAMPLE:
 
-	// f = 1 + 2x - 3x^2
-	ZZX f; 
-	SetCoeff(f, 0, 1);
-	SetCoeff(f, 1, 2);
-	SetCoeff(f, 2, -3);
-	ZZ max = polynomial_max_coeff(f);
-	cout << max << endl;
+    // f = 1 + 2x - 3x^2
+    ZZX f;
+    SetCoeff(f, 0, 1);
+    SetCoeff(f, 1, 2);
+    SetCoeff(f, 2, -3);
+    ZZ max = polynomial_max_coeff(f);
+    cout << max << endl;
 
-	OUTPUT:
-	3
-	*/
+    OUTPUT:
+    3
+    */
 
     ZZ max;
     max = 0;
@@ -205,7 +205,7 @@ complex<double> *constant_poly_vector(long logN)
     }
     Context context(logN, 1);
     context.fftSpecial(vec, slots);
-    //print_poly(mx, 11);
+    // print_poly(mx, 11);
     return vec;
 }
 
@@ -219,13 +219,13 @@ double max_difference(complex<double> *array1, complex<double> *array2, long slo
     double size;
     for (int i = 0; i < slots; i++)
     {
-        //take difference on ith slot
+        // take difference on ith slot
         diff = array1[i] - array2[i];
-        //take norm: but this is squared
+        // take norm: but this is squared
         size = norm(diff);
-        //so squareroot
+        // so squareroot
         size = sqrt(size);
-        //and compare
+        // and compare
         if (size > max)
         {
             max = size;
@@ -242,9 +242,9 @@ double max_real_difference(complex<double> *array1, complex<double> *array2, lon
     double rdiff;
     for (int j = 0; j < slots; j++)
     {
-        //take the difference of real part
+        // take the difference of real part
         rdiff = array1[j].real() - array2[j].real();
-        //absolute value
+        // absolute value
         rdiff = abs(rdiff);
         if (rdiff > max)
         {
