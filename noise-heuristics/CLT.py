@@ -2,7 +2,7 @@
 # CLT CKKS ESTIMATES #
 ######################
 from math import sqrt, log, floor
-from scipy.special import erfinv,erf
+from scipy.special import erfinv, erf
 from config import *
 # the CLT approach tracks the growth of the variance of the error coefficients in the ring
 # does not generate bounds directly -- once a final rho is calculated, translate to worst
@@ -46,7 +46,7 @@ def rho_to_ringerror_alpha(sq_rho, N, alpha):
 
 def rho_to_complexerror_alpha(sq_rho, N, alpha, delta):
     # translate to total error in complex
-    tail = sqrt(-N * log(1 - pow(1 - alpha, 2 / N))) 
+    tail = sqrt(-N * log(1 - pow(1 - alpha, 2 / N), 2))
     return sqrt(sq_rho) * tail / delta
 
 
@@ -104,15 +104,20 @@ def test_clt_bounds_alpha(N, alpha, delta, B, sigma, q, tag=None):
 
 # now we do the same for encoding
 
+
 def clt_encode_message_bound(input_bound, delta):
     return delta**2 * input_bound**2
 
 # this is a duplicate of rho to complex error alpha, line 49
+
+
 def clt_decode_complex(rho, N, alpha, delta):
     blob = sqrt(- N * log(1 - alpha**(2 / N), 2))
     return rho * blob / delta
 
-## this is a duplicate of rho to real error alpha, line 55
+# this is a duplicate of rho to real error alpha, line 55
+
+
 def clt_decode_real(rho, N, alpha, delta):
     return sqrt(rho * N) * erfinv((1 - alpha)**(2 / N)) / delta
 

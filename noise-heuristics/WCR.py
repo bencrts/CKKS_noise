@@ -50,6 +50,7 @@ def ckks_scale_alpha(N, alpha):
 
 # ckks_mult includes key switch but not scale
 
+
 def ckks_mult(input_noise1, input_noise2, message_bound1, message_bound2, N, sigma, delta):
     # blob = (1/P)*q_current*ckks_ks(n, q_current, sigma) old
     blob = ckks_ks(N, sigma)
@@ -66,6 +67,7 @@ def ckks_mult_alpha(input_noise1, input_noise2, message_bound1, message_bound2, 
 
 # Now let's get the actual noise growth in in a circuit (actual size, not bits)
 
+
 def get_lwe_noise(input_noise, q_current):
     noise_mod_q = input_noise % q_current
     return noise_mod_q
@@ -75,24 +77,24 @@ def get_lwe_noise(input_noise, q_current):
 # fresh ciphertexts, add them, multiply a fresh ct
 # with the result of the addition, modulus switch.
 
-def test_lwe_noise(N, B, sigma, delta,tag = None):
+def test_lwe_noise(N, B, sigma, delta, tag=None):
     message_bound = B
     fresh = ckks_fresh(sigma, N)
     noise_add_C1 = ckks_add(fresh, fresh)
     noise_add_mult_C3 = ckks_mult(noise_add_C1, fresh, 2 * message_bound, message_bound, N, sigma, delta)
     result = {}
     result["type"] = tag
-    result["log(N)"] = log(N,2)
+    result["log(N)"] = log(N, 2)
     result["log(Δ)"] = log(delta, 2)
     result["α"] = None
-    result["fresh noise"] = round(log(fresh,2),2)
+    result["fresh noise"] = round(log(fresh, 2), 2)
     result["log(MB)"] = round(log(message_bound, 2), 2)
-    result["+"] = round(log(noise_add_C1, 2),2)
-    result["x"] = round(log(noise_add_mult_C3, 2),2)
+    result["+"] = round(log(noise_add_C1, 2), 2)
+    result["x"] = round(log(noise_add_mult_C3, 2), 2)
     return result
 
 
-def test_lwe_noise_alpha(N, B, sigma, delta, alpha, tag = None):
+def test_lwe_noise_alpha(N, B, sigma, delta, alpha, tag=None):
     message_bound = B
     fresh = ckks_fresh_alpha(sigma, N, alpha)
     noise_add_C1 = ckks_add(fresh, fresh)
@@ -100,16 +102,17 @@ def test_lwe_noise_alpha(N, B, sigma, delta, alpha, tag = None):
 
     result = {}
     result["type"] = tag
-    result["log(N)"] = log(N,2)
+    result["log(N)"] = log(N, 2)
     result["log(Δ)"] = log(delta, 2)
     result["α"] = alpha
     result["log(MB)"] = round(log(message_bound, 2), 2)
-    result["+"] = round(log(noise_add_C1, 2),2)
-    result["x"] = round(log(noise_add_mult_C3, 2),2)
+    result["+"] = round(log(noise_add_C1, 2), 2)
+    result["x"] = round(log(noise_add_mult_C3, 2), 2)
 
     return result
 
 # now we do the same for encoding
+
 
 def wcr_message_bound(B, delta):
     return B * delta
@@ -119,7 +122,7 @@ def wcr_decode(N, noise, delta):
     return (2 * N * noise) / (pi * delta)
 
 
-def test_lwe_noise_encoding_alpha(N, B, sigma, delta, alpha, tag = None):
+def test_lwe_noise_encoding_alpha(N, B, sigma, delta, alpha, tag=None):
     message_bound = wcr_message_bound(B, delta)
     fresh = ckks_fresh_alpha(sigma, N, alpha)
     fresh += 0.5
@@ -130,11 +133,11 @@ def test_lwe_noise_encoding_alpha(N, B, sigma, delta, alpha, tag = None):
 
     result = {}
     result["type"] = tag
-    result["log(N)"] = log(N,2)
+    result["log(N)"] = log(N, 2)
     result["log(Δ)"] = log(delta, 2)
     result["α"] = alpha
     result["log(MB)"] = round(log(message_bound, 2), 2)
-    result["+"] = round(log(decode_add_C1, 2),2)
-    result["x"] = round(log(decode_add_mult_C3, 2),2)
+    result["+"] = round(log(decode_add_C1, 2), 2)
+    result["x"] = round(log(decode_add_mult_C3, 2), 2)
 
     return result
