@@ -26,7 +26,7 @@ int main()
         cout << "We are running noise_final_random_plaintext: \n\n";
     }
 
-    for (int i = 1; i < log_N.size(); i++)
+    for (int i = 0; i < log_N.size(); i++)
     {
         cout << "Over " << loop << " loops, the results are... \n\n"
              << endl;
