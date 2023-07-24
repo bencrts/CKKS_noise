@@ -1,3 +1,6 @@
 [submodule "FullRNS-HEAAN"]
 	path = FullRNS-HEAAN
 	url = https://github.com/KyoohyungHan/FullRNS-HEAAN.git
+[submodule "HEAAN"]
+	path = HEAAN
+	url = https://github.com/snucrypto/HEAAN.git
