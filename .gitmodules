@@ -1,0 +1,3 @@
+[submodule "FullRNS-HEAAN"]
+	path = FullRNS-HEAAN
+	url = https://github.com/KyoohyungHan/FullRNS-HEAAN.git
